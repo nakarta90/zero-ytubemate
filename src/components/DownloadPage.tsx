@@ -61,14 +61,10 @@ export default function DownloadPage({ videoId }: { videoId: string }) {
   }, [videoId, t]);
 
   const triggerDownload = useCallback((url: string) => {
-    // Use a hidden <a> tag click to avoid popup blockers
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    // The download URL serves files with Content-Disposition: attachment header,
+    // so the browser will download it without navigating away from the page.
+    // Using window.location.assign avoids popups entirely.
+    window.location.assign(url);
   }, []);
 
   const pollProgress = useCallback(async (progressUrl: string, format: string) => {
@@ -310,7 +306,6 @@ function FormatRow({
       {status === 'ready' && downloadUrl && (
         <a
           href={downloadUrl}
-          target="_blank"
           rel="noopener noreferrer"
           className="gradient-bg text-white text-sm font-medium px-5 py-2.5 rounded-lg flex items-center gap-2 hover:opacity-90 transition-opacity"
         >
